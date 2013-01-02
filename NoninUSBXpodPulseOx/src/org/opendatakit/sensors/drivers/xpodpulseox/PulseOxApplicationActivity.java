@@ -19,6 +19,17 @@ import java.util.List;
 
 import org.opendatakit.sensors.service.BaseActivity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.RemoteException;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.TextView;
+
 import com.androidplot.ui.AnchorPosition;
 import com.androidplot.ui.widget.Widget;
 import com.androidplot.xy.BoundaryMode;
@@ -27,19 +38,6 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XLayoutStyle;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.YLayoutStyle;
-
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.RemoteException;
-import android.os.Vibrator;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
-import android.widget.TextView;
 
 public class PulseOxApplicationActivity extends BaseActivity {
 
@@ -56,7 +54,6 @@ public class PulseOxApplicationActivity extends BaseActivity {
 
 	private Integer mAnswerOx;
 	private Integer mAnswerPulse;
-	private Vibrator vibrator;
 
 	private DataProcessor pulseOxProcessor;
 
@@ -66,9 +63,7 @@ public class PulseOxApplicationActivity extends BaseActivity {
 	private SimpleXYSeries oxygenSeries;
 	private XYPlot dataPlot;
 	private int dataPointCounter = 0;
-	
-	private int counter = 0;
-	
+		
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -103,9 +98,6 @@ public class PulseOxApplicationActivity extends BaseActivity {
 				Log.d(TAG, "restored pulseOxId: " + pulseOxId);
 			}
 		}
-
-		// get vibrator service
-		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
 		isConnected = false;
 		mAnswerOx = 0;

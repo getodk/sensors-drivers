@@ -9,7 +9,9 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:onClick="connectButtonAction"
-        android:text="connect" />
+        android:paddingTop="25dp"
+        android:paddingBottom="25dp"
+        android:text="Connect Probe" />
 
     <TextView
         android:id="@+id/pulse"
@@ -43,5 +45,23 @@
         android:text="0"
         android:textColor="#0000ff"
         android:textSize="28sp"  android:drawablePadding="20sp"/>
-
+    <Button
+        android:id="@+id/record"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:onClick="recordButtonAction"
+        android:paddingTop="25dp"
+        android:paddingBottom="25dp"
+        android:text="Record Reading" />
+    
+ <com.androidplot.xy.XYPlot
+    android:id="@+id/dataPlot"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginTop="10px"
+    android:layout_marginLeft="10px"
+    android:layout_marginRight="10px"
+    android:layout_marginBottom="10px"
+    title="Data Plot"
+    />
 </LinearLayout>
