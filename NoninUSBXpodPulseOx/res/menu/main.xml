@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:onClick="connectButtonAction"
+        android:paddingTop="25dp"
+        android:paddingBottom="25dp"
+        android:text="Connect Probe" />
+
+    <TextView
+        android:id="@+id/pulse"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Pulse"
+        android:textSize="28sp" 
+        android:drawablePadding="4sp"/>
+
+    <TextView
+        android:id="@+id/pulseReading"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="#00ff00"
+        android:textSize="28sp"  
+        android:drawablePadding="4sp"/>
+
+    <TextView
+        android:id="@+id/oxygen"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Oxygen"
+        android:textSize="28sp" 
+ android:drawablePadding="20sp"/>
+
+    <TextView
+        android:id="@+id/oxygenReading"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="#0000ff"
+        android:textSize="28sp"  android:drawablePadding="20sp"/>
+    <Button
+        android:id="@+id/record"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:onClick="recordButtonAction"
+        android:paddingTop="25dp"
+        android:paddingBottom="25dp"
+        android:text="Record Reading" />
+    
+ <com.androidplot.xy.XYPlot
+    android:id="@+id/dataPlot"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginTop="10px"
+    android:layout_marginLeft="10px"
+    android:layout_marginRight="10px"
+    android:layout_marginBottom="10px"
+    title="Data Plot"
+    />
+</LinearLayout>
