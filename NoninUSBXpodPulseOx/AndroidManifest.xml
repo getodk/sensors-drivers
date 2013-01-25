@@ -1,0 +1,50 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.opendatakit.sensors.drivers.xpodpulseox"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="15" />
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".PulseOxApplicationActivity"
+            android:label="PulseOxDriver" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+             <intent-filter>
+             	<action android:name="org.opendatakit.sensors.PULSEOX"/>
+             	<category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        
+        <meta-data
+            android:name="ODK_sensors_version"
+            android:value="V2" />
+        <meta-data
+            android:name="ODK_sensors_commChannel"
+            android:value="USB" />
+        <meta-data
+            android:name="ODK_sensors_driverType"
+            android:value="NoninXpodPulseOx" />
+        <meta-data
+            android:name="ODK_sensors_address"
+            android:value="org.opendatakit.sensors.drivers.SensorDriverService" />
+        <meta-data
+            android:name="ODK_sensors_driverImplClassname"
+            android:value="org.opendatakit.sensors.drivers.xpodpulseox.NoninXpodPulseOx" />
+        <meta-data  
+            android:name="ODK_sensors_uiActivity"
+            android:value="org.opendatakit.sensors.drivers.xpodpulseox.PulseOxApplicationActivity"/>
+        <service
+            android:name="org.opendatakit.sensors.drivers.SensorDriverService" 
+            android:exported="true" >
+        </service>
+    </application>
+
+</manifest>
