@@ -51,7 +51,7 @@ class NoninFrame {
 		}
 		
 		if((frame[3] & 0x80) != 0x00) {
-			throw new NoninParseException("Flat Byte does not have Bit 7 set to 0!");
+			throw new NoninParseException("Flat Byte does not have Bit 7 set to 0 (Zero)!");
 		}
 		
 		int checksum = frame[0] + frame[1] + frame[2] + frame[3];
