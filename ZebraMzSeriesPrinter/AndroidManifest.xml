@@ -6,13 +6,18 @@
     <uses-sdk android:minSdkVersion="8" />
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name="SensorDriverActivity"
+        <activity android:name="PrinterDriverActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+             	<action android:name="org.opendatakit.sensors.ZebraPrinter"/>
+             	<category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
+        
         <meta-data android:name="ODK_sensors_version" android:value="V2" />
         <meta-data android:name="ODK_sensors_commChannel" android:value="BLUETOOTH" />
         <meta-data android:name="ODK_sensors_driverType" android:value="PrinterDriver" />
@@ -22,5 +27,14 @@
         <service android:exported="true" android:name="org.opendatakit.sensors.drivers.SensorDriverService">
             
         </service>
+        
+        <receiver android:exported="true" android:enabled="true" android:name="PrinterDriverActivity$PrinterDataReceiver">
+            <intent-filter>
+             	<action android:name="org.opendatakit.sensors.ZebraPrinter.data"/>
+             	<category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            </receiver>
+            
+        
     </application>
 </manifest>
