@@ -37,6 +37,9 @@ public class PrinterDriver extends AbstractDriverBaseV2  {
 
 	public static final String TAG = "PrinterDriver";
 	
+	private static final int BARCODE_HEIGHT_DPI = 50;
+	private static final int TEXT_HEIGHT_DPI = 25;
+	
 	public PrinterDriver() {		
 		Log.d(TAG," constructed.");
 	}
@@ -51,24 +54,35 @@ public class PrinterDriver extends AbstractDriverBaseV2  {
 	@Override
 	public byte[] sendDataToSensor(Bundle dataToFormat) {
 		Log.d(TAG,"sendDataToSensor entered");
-		String printCmd = new String();
 		
-		int labelLength = dataToFormat.getInt("LABEL-HEIGHT");
-		if(labelLength == 0) {
-			Log.d(TAG,"LABEL-HEIGHT not specified. returning null");
-			return null; //rather than return null, driver should throw exception if certain required fields are missing.
-		}
-		
-		printCmd = "! 0 200 200 " + labelLength + " 1\r\n ON-FEED IGNORE\r\n";				
-
-		int yValue = 10;
+		int labelHeight = dataToFormat.getInt("LABEL-HEIGHT");
 		String barcode = dataToFormat.getString("BARCODE");
-		if(barcode != null) {
-			printCmd += "BARCODE 128 1 1 50 0 " + yValue + " " + barcode + "\r\n";		
-			yValue += 80;
+		Bundle textStrings = dataToFormat.getBundle("TEXT-STRINGS");
+		
+		String printCmd = new String();
+				
+		if(labelHeight == 0) {
+			
+			labelHeight = 5;
+			
+			if(barcode != null) 
+				labelHeight += BARCODE_HEIGHT_DPI;
+			
+			if(textStrings != null) {
+				labelHeight += textStrings.size() * TEXT_HEIGHT_DPI;
+			}
+			
+			Log.d(TAG,"calculated label height: " + labelHeight);
 		}
 		
-		Bundle textStrings = dataToFormat.getBundle("TEXT-STRINGS");
+		printCmd = "! 0 200 200 " + labelHeight + " 1\r\n ON-FEED IGNORE\r\n";				
+
+		int yValue = 5;		
+		if(barcode != null) {
+			printCmd += "BARCODE 128 1 1 45 0 " + yValue + " " + barcode + "\r\n";		
+			yValue += BARCODE_HEIGHT_DPI;
+		}
+				
 		if(textStrings != null) {
 			
 			for(int i = 0; i < textStrings.size(); i++) {
@@ -79,7 +93,7 @@ public class PrinterDriver extends AbstractDriverBaseV2  {
 				}
 				//else 
 				printCmd += "TEXT 7 0 0 " + yValue + " " + str +  " \r\n";
-				yValue +=30;
+				yValue +=TEXT_HEIGHT_DPI;
 			}
 		}
 								

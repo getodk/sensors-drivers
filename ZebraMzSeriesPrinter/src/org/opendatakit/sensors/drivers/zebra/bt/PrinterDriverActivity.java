@@ -105,6 +105,12 @@ public class PrinterDriverActivity extends BaseActivity {
 		showDiscoveryDialogMsg();
 	}
 	
+	@Override 
+	public void onBackPressed() {
+		Log.d(TAG,"onBackPressed");
+		activityShutdownActions();
+	}
+	
 	public void exitApplication(View view) {
 		activityShutdownActions();
 	}
