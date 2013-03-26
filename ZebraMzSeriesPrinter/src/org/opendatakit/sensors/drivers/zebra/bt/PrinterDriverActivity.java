@@ -16,6 +16,13 @@
 
 package org.opendatakit.sensors.drivers.zebra.bt;
 
+/**
+ * 
+ * @author wbrunette@gmail.com
+ * @author rohitchaudhri@gmail.com
+ * 
+ */
+
 import org.opendatakit.sensors.service.BaseActivity;
 
 import android.app.AlertDialog;
@@ -28,6 +35,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 public class PrinterDriverActivity extends BaseActivity {
 	
@@ -38,17 +46,19 @@ public class PrinterDriverActivity extends BaseActivity {
 	private static final int SENSOR_CONNECTION_COUNTER = 10;	
 	
 	
-//	private Button donor2Button, donor3Button;
-	static String printerID = null;
+	private Button reconnectPrinterButton;
+	private String printerID = null;
 	static Bundle printDataBundle = null;
 	
-	private static ConnectionThread connectionThread;
-	static PrinterDriverActivity staticActivityInstance = null;
+	private ConnectionThread connectionThread;
 	
 	@Override
 	public void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
-		setContentView(R.layout.printview);		
+		setContentView(R.layout.printview);	
+		
+		reconnectPrinterButton = (Button)findViewById(R.id.reconnectPrinter);
+		reconnectPrinterButton.setEnabled(false);
 		
 		SharedPreferences appPreferences = getPreferences(MODE_PRIVATE);
 
@@ -56,13 +66,9 @@ public class PrinterDriverActivity extends BaseActivity {
 			printerID = appPreferences.getString(PRINTER_ID_STR, null);
 			if(printerID != null) {
 				Log.d(TAG,"restored printerID: " + printerID);
+				reconnectPrinterButton.setEnabled(true);
 			}
-		}
-		
-		staticActivityInstance = this;
-		
-//		printDataReceiver = new PrinterDataReceiver();
-//		printDataReceiver.setParentActivity(this);
+		}		
 	}		
 	
 	public void print(View view) {
@@ -81,9 +87,7 @@ public class PrinterDriverActivity extends BaseActivity {
 			}
 
 			if(printDataBundle != null) {
-				super.sendDataToSensor(printerID, printDataBundle);
-				//			printDataBundle.clear();
-				//			printDataBundle = null;
+				sendDataToSensor(printerID, printDataBundle);				
 			}
 		}
 		catch(RemoteException rex) {
@@ -105,7 +109,7 @@ public class PrinterDriverActivity extends BaseActivity {
 		activityShutdownActions();
 	}
 	
-	static void startConnectionThread() {
+	private void startConnectionThread() {
 		if(connectionThread != null && connectionThread.isAlive()) {
 			connectionThread.stopConnectionThread();
 		}
@@ -114,17 +118,17 @@ public class PrinterDriverActivity extends BaseActivity {
 		connectionThread.start();
 	}
 	
-	static void showDiscoveryDialogMsg() {
-		final AlertDialog.Builder alert = new AlertDialog.Builder(staticActivityInstance);
+	private void showDiscoveryDialogMsg() {
+		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		
 		// Positive Button & Negative Button & handler
-		alert.setMessage("Click OK to install printer driver");
+		alert.setMessage("Click OK to install printer");
 		alert.setPositiveButton("OK", discoveryDiagListener);
 		alert.setNegativeButton("Cancel", discoveryDiagListener);
 		alert.show();
 	}
 	
-	private static final android.content.DialogInterface.OnClickListener discoveryDiagListener = new DialogInterface.OnClickListener() {
+	private final android.content.DialogInterface.OnClickListener discoveryDiagListener = new DialogInterface.OnClickListener() {
 
 		public void onClick(DialogInterface dialog, int whichButton) {
 
@@ -135,7 +139,7 @@ public class PrinterDriverActivity extends BaseActivity {
 
 			// On Positive Set The Text W/ The ListItem
 			case DialogInterface.BUTTON_POSITIVE:
-				staticActivityInstance.launchSensorDiscovery();
+				launchSensorDiscovery();
 				// Just Leave On Cancel
 			case DialogInterface.BUTTON_NEGATIVE:
 				dialog.cancel();
@@ -153,67 +157,47 @@ public class PrinterDriverActivity extends BaseActivity {
 		catch(Exception ex) {
 			ex.printStackTrace();
 		}
-
-//		unregisterReceiver(printDataReceiver);
 		
 		finish();
 		super.onDestroy();
 	}
 	
-	public static class PrinterDataReceiver extends BroadcastReceiver {
-		
-		private static final String TAG = "PrintDataReceiver";
-		public static final String PRINT_INTENT_ACTION_DATA = "org.opendatakit.sensors.ZebraPrinter.data";
-		
-		/**
-		 * Called when broadcast is received.
-		 * 
-		 * @param context
-		 *            application context
-		 * @param intent
-		 *            broadcast intent
-		 */
-		@Override
-		public void onReceive(Context context, Intent intent) {
+	@Override
+	protected void onActivityResult (int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		Log.d(TAG,"result code: " + resultCode + "  and  requestCode: "+ requestCode);
 
-			Log.d(TAG,"bcasst received");
-			if(intent.getAction().equals(PRINT_INTENT_ACTION_DATA)) {
-				Log.d(TAG,"got PRINT_INTENT_ACTION_DATA");
-				printDataBundle = intent.getBundleExtra("DATA");
-				
-				if(printDataBundle != null) {
-					Log.d(TAG,"label height: " + printDataBundle.getInt("LABEL-HEIGHT"));
-					
-//					if(printerID == null) {
-//						Log.d(TAG,"printerID is null");
-//						showDiscoveryDialogMsg();
-//						return;
-//					}
-//			
-//					try {	
-//			
-//						if (!staticActivityInstance.isConnected(printerID)) {			
-//							startConnectionThread();
-//							return; 
-//						}
-//			
-//						staticActivityInstance.sendDataToSensor(printerID, printDataBundle);
-//						printDataBundle.clear();
-//						printDataBundle = null;
-//					}
-//					catch(RemoteException rex) {
-//						rex.printStackTrace();
-//					}
-						
+		if (requestCode == SENSOR_DISCOVERY_RETURN) {
+			//from addSensorActvitity
+			if (resultCode == RESULT_OK) {	
+				// Get sensor id and state from result
+				if (data.hasExtra("sensor_id"))
+					printerID = data.getStringExtra("sensor_id");
+				else
+					printerID = null;
+
+				if(printerID != null ) {
+					Log.d(TAG, "sensor discovered: " + printerID);
+
+					SharedPreferences.Editor prefsEditor = getPreferences(MODE_PRIVATE).edit();
+					prefsEditor.putString(PRINTER_ID_STR, printerID);
+					if(prefsEditor.commit()) 
+						Log.d(TAG,"saved tempSensorID to preferences");
+					else 
+						Log.e(TAG,"preferences commit failed for tempSensorID");
+
+					reconnectPrinterButton.setEnabled(true);
+					startConnectionThread();
 				}
 				else {
-					Log.e(TAG,"print data bundle missing!");
+					Log.d(TAG,"activity result returned without sensorID");
 				}
-			}			
+			}
 		}
 	}
 	
-	static class ConnectionThread extends Thread {
+	private class ConnectionThread extends Thread {
 		private String TAG = "Printer ConnectionThread";
 		private boolean isConnThreadRunning = false;
 		private boolean isConnectedToSensor = false;
@@ -245,12 +229,12 @@ public class PrinterDriverActivity extends BaseActivity {
 			int connectCntr = 0;
 
 			try {				
-				staticActivityInstance.sensorConnect(printerID, false);		
+				sensorConnect(printerID, false);		
 
 				while (isConnThreadRunning && (connectCntr++ < SENSOR_CONNECTION_COUNTER)) {						
 					try {					
 
-						if(staticActivityInstance.isConnected(printerID)) {
+						if(isConnected(printerID)) {
 							isConnectedToSensor = true;
 							break;
 						}
@@ -265,9 +249,7 @@ public class PrinterDriverActivity extends BaseActivity {
 				Log.d(TAG,"connectThread connect status: " + isConnectedToSensor);
 
 				if(isConnectedToSensor && printDataBundle != null) {
-					staticActivityInstance.sendDataToSensor(printerID, printDataBundle);
-//					printDataBundle.clear();
-//					printDataBundle = null;
+					sendDataToSensor(printerID, printDataBundle);
 				}
 			}
 			catch(RemoteException rex) {
@@ -276,37 +258,34 @@ public class PrinterDriverActivity extends BaseActivity {
 		}
 	}
 	
-	@Override
-	protected void onActivityResult (int requestCode, int resultCode, Intent data)
-	{
-		super.onActivityResult(requestCode, resultCode, data);
-		Log.d(TAG,"result code: " + resultCode + "  and  requestCode: "+ requestCode);
+public static class PrinterDataReceiver extends BroadcastReceiver {
+		
+		private static final String TAG = "PrintDataReceiver";
+		public static final String PRINT_INTENT_ACTION_DATA = "org.opendatakit.sensors.ZebraPrinter.data";
+		
+		/**
+		 * Called when broadcast is received.
+		 * 
+		 * @param context
+		 *            application context
+		 * @param intent
+		 *            broadcast intent
+		 */
+		@Override
+		public void onReceive(Context context, Intent intent) {
 
-		if (requestCode == SENSOR_DISCOVERY_RETURN) {
-			//from addSensorActvitity
-			if (resultCode == RESULT_OK) {	
-				// Get sensor id and state from result
-				if (data.hasExtra("sensor_id"))
-					printerID = data.getStringExtra("sensor_id");
-				else
-					printerID = null;
-
-				if(printerID != null ) {
-					Log.d(TAG, "sensor discovered: " + printerID);
-
-					SharedPreferences.Editor prefsEditor = getPreferences(MODE_PRIVATE).edit();
-					prefsEditor.putString(PRINTER_ID_STR, printerID);
-					if(prefsEditor.commit()) 
-						Log.d(TAG,"saved tempSensorID to preferences");
-					else 
-						Log.e(TAG,"preferences commit failed for tempSensorID");
-
-					startConnectionThread();
+			Log.d(TAG,"bcast received");
+			if(intent.getAction().equals(PRINT_INTENT_ACTION_DATA)) {
+				Log.d(TAG,"got PRINT_INTENT_ACTION_DATA");
+				printDataBundle = intent.getBundleExtra("DATA");
+				
+				if(printDataBundle != null) {
+					Log.d(TAG,"label height: " + printDataBundle.getInt("LABEL-HEIGHT"));						
 				}
 				else {
-					Log.d(TAG,"activity result returned without sensorID");
+					Log.e(TAG,"print data bundle missing!");
 				}
-			}
+			}			
 		}
 	}
 }

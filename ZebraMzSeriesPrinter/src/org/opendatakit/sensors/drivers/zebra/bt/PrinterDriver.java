@@ -16,6 +16,13 @@
 
 package org.opendatakit.sensors.drivers.zebra.bt;
 
+/**
+ * 
+ * @author wbrunette@gmail.com
+ * @author rohitchaudhri@gmail.com
+ * 
+ */
+
 import java.util.ArrayList;
 import java.util.List;
 
