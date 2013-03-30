@@ -3,3 +3,6 @@ syntax: regexp
 ^NoninUSBXpodPulseOx/gen$
 syntax: regexp
 ^NoninUSBXpodPulseOx/bin$
+syntax: glob
+*/bin/**
+*/gen/**

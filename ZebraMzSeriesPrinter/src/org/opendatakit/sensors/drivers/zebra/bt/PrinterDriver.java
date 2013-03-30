@@ -17,12 +17,13 @@
 package org.opendatakit.sensors.drivers.zebra.bt;
 
 /**
- * 
+ *
  * @author wbrunette@gmail.com
  * @author rohitchaudhri@gmail.com
- * 
+ *
  */
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,71 +37,106 @@ import android.util.Log;
 public class PrinterDriver extends AbstractDriverBaseV2  {
 
 	public static final String TAG = "PrinterDriver";
-	
+
 	private static final int BARCODE_HEIGHT_DPI = 50;
 	private static final int TEXT_HEIGHT_DPI = 25;
-	
-	public PrinterDriver() {		
+
+	public PrinterDriver() {
 		Log.d(TAG," constructed.");
 	}
 
 	@Override
 	public SensorDataParseResponse getSensorData(long maxNumReadings, List<SensorDataPacket> rawData, byte[] remainingData) {
-		List<Bundle> allData = new ArrayList<Bundle>();		
-		
-		return new SensorDataParseResponse(allData, null);	
+		List<Bundle> allData = new ArrayList<Bundle>();
+
+		return new SensorDataParseResponse(allData, null);
 	}
 
 	@Override
 	public byte[] sendDataToSensor(Bundle dataToFormat) {
 		Log.d(TAG,"sendDataToSensor entered");
-		
+
 		int labelHeight = dataToFormat.getInt("LABEL-HEIGHT");
 		String barcode = dataToFormat.getString("BARCODE");
-		Bundle textStrings = dataToFormat.getBundle("TEXT-STRINGS");
-		
-		String printCmd = new String();
-				
+		String qrcode = dataToFormat.getString("QRCODE");
+		String[] strings = dataToFormat.getStringArray("TEXT-STRINGS");
+
+		if ( barcode == null && qrcode == null && strings == null || strings.length == 0 ) {
+			Log.d(TAG, "No data received by printer driver");
+			return null;
+		}
+
+		StringBuilder printCmd = new StringBuilder();
+
 		if(labelHeight == 0) {
-			
+
 			labelHeight = 5;
-			
-			if(barcode != null) 
+
+			if(barcode != null && barcode.length() > 0) {
 				labelHeight += BARCODE_HEIGHT_DPI;
-			
-			if(textStrings != null) {
-				labelHeight += textStrings.size() * TEXT_HEIGHT_DPI;
 			}
-			
+
+			if (qrcode != null && qrcode.length() > 0) {
+
+				// for Medium ECC, Alphanumeric
+				int[] capacity = {
+						 20,  38,  61,  90, 122, 154, 178, 221, 262, 311,
+						366, 419, 483, 528, 600, 656, 734, 816, 909, 970,
+						1035, 1134, 1248, 1326, 1451, 1542, 1637, 1732, 1839, 1994,
+						2113, 2238, 2369, 2506, 2632, 2780, 2894, 3054, 3220, 3391 };
+
+				// assume 20% overhead in string (conservative)
+				int storage = qrcode.length() + (qrcode.length()/5);
+				int level;
+				for (level = 0; level < capacity.length ; ++level ) {
+					if ( capacity[level] > storage ) {
+						break;
+					}
+				}
+				int modules = 21 + 4*level;
+
+				labelHeight += modules*6;
+			}
+
+			if (strings != null) {
+				labelHeight += strings.length * TEXT_HEIGHT_DPI;
+			}
+
 			Log.d(TAG,"calculated label height: " + labelHeight);
 		}
-		
-		printCmd = "! 0 200 200 " + labelHeight + " 1\r\n ON-FEED IGNORE\r\n";				
 
-		int yValue = 5;		
-		if(barcode != null) {
-			printCmd += "BARCODE 128 1 1 45 0 " + yValue + " " + barcode + "\r\n";		
+		printCmd.append("! 0 200 200 " + labelHeight + " 1\r\n ON-FEED IGNORE\r\n ENCODING UTF-8\r\n");
+
+		int yValue = 5;
+		if(barcode != null && barcode.length() > 0) {
+			printCmd.append("BARCODE 128 1 1 45 0 " + yValue + " " + barcode + "\r\n");
 			yValue += BARCODE_HEIGHT_DPI;
 		}
-				
-		if(textStrings != null) {
-			
-			for(int i = 0; i < textStrings.size(); i++) {
-				String str = textStrings.getString(Integer.toString(i+1));
-				if(str == null) {
-					Log.d(TAG,"Reguired string #" + (i+1) + " not specified. returning null");
-					return null;
-				}
-				//else 
-				printCmd += "TEXT 7 0 0 " + yValue + " " + str +  " \r\n";
+
+		if (strings != null) {
+			for(String str : strings) {
+				printCmd.append("TEXT 7 0 0 " + yValue + " " + str +  " \r\n");
 				yValue +=TEXT_HEIGHT_DPI;
 			}
 		}
-								
-		printCmd += "PRINT \r\n";
+
+		// print the QR code at the bottom to avoid calculating height.
+		if (qrcode != null && qrcode.length() > 0) {
+			printCmd.append("BARCODE QR 0 " + yValue + " M 2 U 6\r\n");
+			printCmd.append("MA,").append(qrcode).append("\r\n");
+			printCmd.append("ENDQR\r\n");
+		}
+
+		printCmd.append("PRINT \r\n");
 		Log.d(TAG,"sendDataToSensor returning");
-		
-		return printCmd.getBytes();
+
+		byte[] bytes = null;
+		try {
+			bytes = printCmd.toString().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return bytes;
 	}
 
 }
