@@ -1,44 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/LinearLayout1"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:weightSum="1" >
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp" >
 
-    <Button
-        android:id="@+id/printButton"
-        android:layout_width="286dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center"
-        android:onClick="print"
-        android:text="@+string/print" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/reconnectPrinter"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" >
+
+        <Button
+            android:id="@+id/printButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center"
+            android:onClick="print"
+            android:padding="20dp"
+            android:text="@+string/print"
+            android:textSize="21sp" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/reconnectPrinter"
-        android:layout_width="286dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/exitApp"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center_vertical|center"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:onClick="reconnectPrinter"
-        android:text="@+string/connect_to_another_printer" />
+        android:padding="20dp"
+        android:text="@+string/connect_to_another_printer"
+        android:textSize="21sp" />
 
-    <LinearLayout
-         android:layout_width="286dp"
-        android:layout_height="0dip"
-        android:layout_gravity="center_vertical|center"
-        android:layout_marginTop="30dp"
-        android:layout_weight="0.31" >
+    <Button
+        android:id="@+id/exitApp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:onClick="exitApplication"
+        android:padding="20dp"
+        android:text="@+string/exit_print"
+        android:textSize="21sp" />
 
-        <Button
-            android:id="@+id/exitApp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="exitApplication"
-            android:text="@+string/exit_print" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
