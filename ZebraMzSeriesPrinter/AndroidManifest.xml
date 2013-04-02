@@ -22,7 +22,7 @@
 
         <meta-data android:name="ODK_sensors_version" android:value="V2" />
         <meta-data android:name="ODK_sensors_commChannel" android:value="BLUETOOTH" />
-        <meta-data android:name="ODK_sensors_driverType" android:value="PrinterDriver" />
+        <meta-data android:name="ODK_sensors_driverType" android:value="Zebra MZ Series Printer" />
         <meta-data android:name="ODK_sensors_address" android:value="org.opendatakit.sensors.drivers.SensorDriverService"/>
         <meta-data android:name="ODK_sensors_driverImplClassname" android:value="org.opendatakit.sensors.drivers.zebra.bt.PrinterDriver" />
 
