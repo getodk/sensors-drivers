@@ -11,57 +11,102 @@
         android:onClick="connectButtonAction"
         android:paddingTop="25dp"
         android:paddingBottom="25dp"
-        android:text="Connect Probe" />
+        android:text="@string/connect_button_txt" />
 
+<TableLayout
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content">
+	
+	<TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10sp" >
     <TextView
         android:id="@+id/pulse"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
-        android:text="Pulse"
+        android:text="@string/pulse_label"
         android:textSize="28sp" 
         android:drawablePadding="4sp"/>
-
+ 
     <TextView
         android:id="@+id/pulseReading"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0"
+        android:text="@string/zero"
         android:textColor="#00ff00"
+         android:gravity="center_horizontal"
         android:textSize="28sp"  
         android:drawablePadding="4sp"/>
-
+    </TableRow>
+        <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10sp" >
+    
     <TextView
         android:id="@+id/oxygen"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Oxygen"
+        android:text="@string/oxygen_label"
         android:textSize="28sp" 
  android:drawablePadding="20sp"/>
-
     <TextView
         android:id="@+id/oxygenReading"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0"
+        android:gravity="center_horizontal"
+        android:text="@string/zero"
         android:textColor="#0000ff"
         android:textSize="28sp"  android:drawablePadding="20sp"/>
+    </TableRow>
+   
+    <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dip" >
+    
+    <TextView
+        android:id="@+id/probeStatusLabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/status_label"
+        android:textSize="16sp"  android:drawablePadding="20sp"/>
+    <TextView
+        android:id="@+id/probeStatus"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/status_default"
+        android:gravity="center_horizontal"
+        android:textSize="16sp"  android:drawablePadding="20sp"/>
+    </TableRow>
+     </TableLayout>
     <Button
         android:id="@+id/record"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:onClick="recordButtonAction"
+        android:textSize="28sp"
         android:paddingTop="25dp"
         android:paddingBottom="25dp"
-        android:text="Record Reading" />
-    
+        android:text="@string/record_button_txt" />
+
+ <LinearLayout
+     android:layout_width="match_parent"
+     android:layout_height="match_parent" >
+
  <com.androidplot.xy.XYPlot
     android:id="@+id/dataPlot"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_marginTop="10px"
-    android:layout_marginLeft="10px"
-    android:layout_marginRight="10px"
-    android:layout_marginBottom="10px"
-    title="Data Plot"
+    android:layout_marginTop="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginBottom="10dp"
+    title="Pulse"
     />
+ </LinearLayout>
 </LinearLayout>

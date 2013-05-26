@@ -43,15 +43,21 @@ public class PulseOxApplicationActivity extends BaseActivity {
 
 	// Tag for Logging
 	private static final String TAG = "PulseOxApp";
-	private static final String OX_SENSOR_ID_STR = "tempSensorID";
+	private static final String OX_SENSOR_ID_STR = "pluseOxSensorID";
 	
-	private static final int MAX_DATAPOINTS = 2000;
+	private static final String DATA_GOOD = "Acceptable to Record";
+	private static final String DATA_INACCURATE = "Inaccurate Data";
+	private static final String DEVICE_NOT_CONNECTED = "Device reads NOT CONNECTED";
+
+	
+	private static final int MAX_DATAPOINTS = 300;
 
 	private String pulseOxId;
 
 	private TextView pulseTxt;
 	private TextView oxTxt;
-
+	private TextView statusTxt;
+	
 	private Integer mAnswerOx;
 	private Integer mAnswerPulse;
 
@@ -60,7 +66,7 @@ public class PulseOxApplicationActivity extends BaseActivity {
 	private boolean isConnected;
 
 	//plots for plotting the data from the oxygen sensor
-	private SimpleXYSeries oxygenSeries;
+	private SimpleXYSeries plenthSeries;
 	private XYPlot dataPlot;
 	private int dataPointCounter = 0;
 		
@@ -71,23 +77,24 @@ public class PulseOxApplicationActivity extends BaseActivity {
 		setContentView(R.layout.main);
 		pulseTxt = (TextView) findViewById(R.id.pulseReading);
 		oxTxt = (TextView) findViewById(R.id.oxygenReading);
+		statusTxt = (TextView) findViewById(R.id.probeStatus);
 		dataPlot = (XYPlot) findViewById (R.id.dataPlot);
 		
  	    Widget domainLabelWidget = dataPlot.getDomainLabelWidget();
  		
         dataPlot.position(domainLabelWidget,                     // the widget to position
-                                 0,                                    // x position value, in this case 45 pixels
+                                 0,                                    // x position value
                                  XLayoutStyle.ABSOLUTE_FROM_LEFT,       // how the x position value is applied, in this case from the left
                                  0,                                     // y position value
                                  YLayoutStyle.ABSOLUTE_FROM_BOTTOM,     // how the y position is applied, in this case from the bottom
                                  AnchorPosition.LEFT_BOTTOM);           // point to use as the origin of the widget being positioned
 
-        dataPlot.setRangeBoundaries(87, 99, BoundaryMode.GROW);
+        dataPlot.setRangeBoundaries(0, 255, BoundaryMode.AUTO);
         // get rid of the visual aids for positioning:
         dataPlot.disableAllMarkup();
 		
-		oxygenSeries = new SimpleXYSeries("Oxygen");
- 		dataPlot.addSeries(oxygenSeries,new LineAndPointFormatter(Color.BLUE, Color.BLUE, Color.TRANSPARENT));
+		plenthSeries = new SimpleXYSeries("HeartWaveform");
+ 		dataPlot.addSeries(plenthSeries,new LineAndPointFormatter(Color.GREEN, Color.BLUE, null));
  		dataPointCounter = 0;
  		
 		// restore stored preferences if any
@@ -211,36 +218,34 @@ public class PulseOxApplicationActivity extends BaseActivity {
 					if (data != null) {
 						
 						for (Bundle b : data) {
-							if (b.containsKey("connected")) {
-								boolean connected = b.getBoolean("connected");
+							if (b.containsKey(NoninPacket.CONNECTED)) {
+								boolean connected = b.getBoolean(NoninPacket.CONNECTED);
 								
 								if (!connected) {
-									pulseTxt.setText("DEVICE READS NOT CONNECTED");
+									pulseTxt.setText(DEVICE_NOT_CONNECTED);
+									oxTxt.setText(DEVICE_NOT_CONNECTED);
+									statusTxt.setText(DEVICE_NOT_CONNECTED);
 									continue;
 								}
 							}
-							if (b.containsKey("usable")) {
-								boolean usable = b.getBoolean("usable");
+							if (b.containsKey(NoninPacket.USABLE)) {
+								boolean usable = b.getBoolean(NoninPacket.USABLE);
 								if (usable) {
 									pulseTxt.setTextColor(Color.MAGENTA);
 									oxTxt.setTextColor(Color.MAGENTA);
+									statusTxt.setTextColor(Color.RED);
+									statusTxt.setText(DATA_INACCURATE);
 								} else {
 									pulseTxt.setTextColor(Color.GREEN);
 									oxTxt.setTextColor(Color.BLUE);
-									int ox = b.getInt("ox");
-	    							oxygenSeries.addLast(dataPointCounter, ox);
-	    			    			dataPointCounter++;
-	    			    			dataPlot.redraw();
-	    							if(dataPointCounter > MAX_DATAPOINTS) { 
-	    								oxygenSeries.removeFirst();
-	    							}
-
+									statusTxt.setTextColor(Color.BLACK);
+									statusTxt.setText(DATA_GOOD);
 								}
 	    						
 							}
 								
-							if (b.containsKey("pulse")) {
-								int pulse = b.getInt("pulse");
+							if (b.containsKey(NoninPacket.PULSE)) {
+								int pulse = b.getInt(NoninPacket.PULSE);
 								if(pulse == 511) {
 									pulseTxt.setText("Error");
 								} else {
@@ -249,8 +254,8 @@ public class PulseOxApplicationActivity extends BaseActivity {
 								mAnswerPulse = pulse;
 								Log.d(TAG, "Got new pulse: " + pulse);
 							}
-							if (b.containsKey("ox")) {
-								int ox = b.getInt("ox");
+							if (b.containsKey(NoninPacket.OX)) {
+								int ox = b.getInt(NoninPacket.OX);
 								if(ox == 127) {
 									oxTxt.setText("Error");
 								} else {
@@ -259,6 +264,22 @@ public class PulseOxApplicationActivity extends BaseActivity {
 								mAnswerOx = ox;
 								//vibrator.vibrate(75);
 								Log.d(TAG, "Got new oxygen: " + ox);
+							}
+							
+							if (b.containsKey(NoninPacket.PLETHYSMOGRAPHIC)) {
+								int[] pleths = b
+										.getIntArray(NoninPacket.PLETHYSMOGRAPHIC);
+
+								for (int i = 0; i < NoninPacket.PACKET_SIZE; i++) {
+									plenthSeries.addLast(dataPointCounter,
+											pleths[i]);
+									dataPointCounter++;
+
+									if (dataPointCounter > MAX_DATAPOINTS) {
+										plenthSeries.removeFirst();
+									}
+								}
+								dataPlot.redraw();
 							}
 						}
 
@@ -303,7 +324,7 @@ public class PulseOxApplicationActivity extends BaseActivity {
 			while (!isCancelled()) {
 				app.processData();
 				try {
-					Thread.sleep(500);
+					Thread.sleep(250);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

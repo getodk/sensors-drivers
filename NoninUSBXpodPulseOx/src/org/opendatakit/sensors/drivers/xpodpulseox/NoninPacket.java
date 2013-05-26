@@ -26,6 +26,7 @@ class NoninPacket {
 	static final String PULSE = "pulse";
 	static final String USABLE = "usable";
 	static final String CONNECTED = "connected";
+	static final String PLETHYSMOGRAPHIC = "plethysmographic";
 	
 	static final int PACKET_SIZE = 25;
 	private NoninFrame [] frames;
@@ -95,12 +96,21 @@ class NoninPacket {
 		return b & 0x7f;		
 	}
 	
+	int [] getPlethysmographic() {
+		int [] readings = new int[PACKET_SIZE];
+		for(int i = 0; i < PACKET_SIZE; i++) {
+			readings[i] = 0xff & frames[i].getPlethysmographic();
+		}
+		return readings;		
+	}
+	
 	Bundle getParsedDataBundle() {
 		Bundle parsedPkt = new Bundle();
 		parsedPkt.putBoolean(CONNECTED, sensorConnected());
 		parsedPkt.putBoolean(USABLE, unusableData());
 		parsedPkt.putInt(PULSE, getExtendedPluseRate());
 		parsedPkt.putInt(OX, getExtendedOxygenLevel());
+		parsedPkt.putIntArray(PLETHYSMOGRAPHIC, getPlethysmographic());
 		return parsedPkt;
 	}
 }

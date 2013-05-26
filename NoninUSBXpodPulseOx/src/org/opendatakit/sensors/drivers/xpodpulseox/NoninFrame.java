@@ -27,8 +27,9 @@ class NoninFrame {
 	private static final int SYNC_BIT = 0;
 	
 	private byte status;
-	private byte flat;
-
+	private byte value;
+	private byte plethysmographic;
+	
 	private int endByteIndex;
 
 	NoninFrame(List<Byte> byteArray, int endIndex) throws NoninParseException {
@@ -65,7 +66,8 @@ class NoninFrame {
 		}
 
 		status = frame[1];
-		flat = frame[3];
+		plethysmographic = frame[2];
+		value = frame[3];
 		endByteIndex = endIndex;
 	}
 	
@@ -88,9 +90,13 @@ class NoninFrame {
 	}
 	
 	byte getFrameValue() {
-		return flat;
+		return value;
 	}
 
+	byte getPlethysmographic() {
+		return plethysmographic;
+	}
+	
 	int getEndByteIndex() {
 		return endByteIndex;
 	}
