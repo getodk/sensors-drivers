@@ -49,6 +49,7 @@ public class PulseOxApplicationActivity extends BaseActivity {
 	private static final String DATA_INACCURATE = "Inaccurate Data";
 	private static final String DEVICE_NOT_CONNECTED = "Device reads NOT CONNECTED";
 
+	private static final int PULSE_COLOR = Color.rgb(64,128,64);
 	
 	private static final int MAX_DATAPOINTS = 300;
 
@@ -92,7 +93,9 @@ public class PulseOxApplicationActivity extends BaseActivity {
         dataPlot.setRangeBoundaries(0, 255, BoundaryMode.AUTO);
         // get rid of the visual aids for positioning:
         dataPlot.disableAllMarkup();
-		
+		dataPlot.setTicksPerRangeLabel(Integer.MAX_VALUE);
+		dataPlot.setTicksPerDomainLabel(Integer.MAX_VALUE);
+        
 		plenthSeries = new SimpleXYSeries("HeartWaveform");
  		dataPlot.addSeries(plenthSeries,new LineAndPointFormatter(Color.GREEN, Color.BLUE, null));
  		dataPointCounter = 0;
@@ -236,7 +239,7 @@ public class PulseOxApplicationActivity extends BaseActivity {
 									statusTxt.setTextColor(Color.RED);
 									statusTxt.setText(DATA_INACCURATE);
 								} else {
-									pulseTxt.setTextColor(Color.GREEN);
+									pulseTxt.setTextColor(PULSE_COLOR);
 									oxTxt.setTextColor(Color.BLUE);
 									statusTxt.setTextColor(Color.BLACK);
 									statusTxt.setText(DATA_GOOD);

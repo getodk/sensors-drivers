@@ -35,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/zero"
-        android:textColor="#00ff00"
+        android:textColor="#408040"
          android:gravity="center_horizontal"
         android:textSize="28sp"  
         android:drawablePadding="4sp"/>
