@@ -29,9 +29,11 @@ import android.util.Log;
 
 public class ZephyrHRSensor extends AbstractDriverBaseV2  {
 
-	private static final String BEAT_COUNT = "BC";
-	private static final String HEART_RATE = "HR";
-	public static final String TAG = "ZephyrHRSensorV2";
+	public static final String BEAT_COUNT = "BC";
+	public  static final String HEART_RATE = "HR";
+	
+	private static final int ZEPHYR_PDU_SIZE = 60;
+	private static final String TAG = "ZephyrHRSensorV2";
 
 	public ZephyrHRSensor() {
 		super();
@@ -66,12 +68,12 @@ public class ZephyrHRSensor extends AbstractDriverBaseV2  {
 
 		// Parse all data into packet sizes of 60 bytes
 		int masked;
-		while (dataBuffer.size() >= 60) {
+		while (dataBuffer.size() >= ZEPHYR_PDU_SIZE) {
 			Log.d(TAG,"dataBuffer size: " + dataBuffer.size());	
 			Bundle parsedPkt = new Bundle();
 			allData.add(parsedPkt);
 
-			for(int i = 0; i < 60; i++) {	
+			for(int i = 0; i < ZEPHYR_PDU_SIZE; i++) {	
 				byte b = dataBuffer.remove(0);	
 
 				if(i == 12) {
