@@ -27,7 +27,7 @@ import org.opendatakit.sensors.drivers.AbstractDriverBaseV2;
 import android.os.Bundle;
 import android.util.Log;
 
-public class ZephyrHRSensor extends AbstractDriverBaseV2  {
+public class HeartrateDriverService extends AbstractDriverBaseV2  {
 
 	public static final String BEAT_COUNT = "BC";
 	public  static final String HEART_RATE = "HR";
@@ -35,7 +35,7 @@ public class ZephyrHRSensor extends AbstractDriverBaseV2  {
 	private static final int ZEPHYR_PDU_SIZE = 60;
 	private static final String TAG = "ZephyrHRSensorV2";
 
-	public ZephyrHRSensor() {
+	public HeartrateDriverService() {
 		super();
 		
 		// data reporting parameters

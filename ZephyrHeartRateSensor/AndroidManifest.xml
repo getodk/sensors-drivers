@@ -6,7 +6,7 @@
     <uses-sdk android:minSdkVersion="10" />
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name="SensorDriverActivity"
+        <activity android:name="HeartrateDriverActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,18 +17,10 @@
         <meta-data android:name="ODK_sensors_commChannel" android:value="BLUETOOTH" />
         <meta-data android:name="ODK_sensors_driverType" android:value="ZephyrHRM" />
         <meta-data android:name="ODK_sensors_address" android:value="org.opendatakit.sensors.drivers.SensorDriverService"/>
-        <meta-data android:name="ODK_sensors_driverImplClassname" android:value="org.opendatakit.sensors.drivers.bt.zephyr.ZephyrHRSensor" />
+        <meta-data android:name="ODK_sensors_driverImplClassname" android:value="org.opendatakit.sensors.drivers.bt.zephyr.HeartrateDriverService" />
         
         <service android:exported="true" android:name="org.opendatakit.sensors.drivers.SensorDriverService">
             
-        </service> 
-                 <receiver
-            android:enabled="true"
-            android:exported="true"
-            android:name="org.opendatakit.sensors.drivers.DriverDiscovery" >
-            <intent-filter >
-                <action android:name="org.opendatakit.sensors.drivers.DriverDiscovery" />
-            </intent-filter>
-        </receiver>
+        </service>
     </application>
 </manifest>

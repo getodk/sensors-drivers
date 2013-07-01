@@ -30,7 +30,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class SensorDriverActivity extends BaseActivity {
+public class HeartrateDriverActivity extends BaseActivity {
 	
 	private static final String HR_SENSOR_ID_STR = "ZEPHYR_SENSOR_ID";
 	private static final String TAG = "SensorDriverActivity";
@@ -157,8 +157,8 @@ public class SensorDriverActivity extends BaseActivity {
 	
 	private void returnSensorDataToCaller() {
 		Intent intent = new Intent();
-		intent.putExtra(ZephyrHRSensor.HEART_RATE, heartRate);
-		intent.putExtra(ZephyrHRSensor.BEAT_COUNT, beatCount);
+		intent.putExtra(HeartrateDriverService.HEART_RATE, heartRate);
+		intent.putExtra(HeartrateDriverService.BEAT_COUNT, beatCount);
 		setResult(RESULT_OK, intent);
 		
 		finish();
@@ -228,8 +228,8 @@ public class SensorDriverActivity extends BaseActivity {
 
 				if(sensorDataBundles != null) {
 					for(Bundle aBundle : sensorDataBundles) {
-						heartRate = aBundle.getInt(ZephyrHRSensor.HEART_RATE);
-						beatCount = aBundle.getInt(ZephyrHRSensor.BEAT_COUNT);
+						heartRate = aBundle.getInt(HeartrateDriverService.HEART_RATE);
+						beatCount = aBundle.getInt(HeartrateDriverService.BEAT_COUNT);
 						
 						heartRateField.setText(String.valueOf(heartRate));
 					}
