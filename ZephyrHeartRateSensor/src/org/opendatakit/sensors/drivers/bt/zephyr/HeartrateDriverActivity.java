@@ -30,23 +30,58 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+/*
+ * Android applications get data from physical sensors via the Android Service interface exposed by ODKSensors that is declared in:
+ * org.opendatakit.sensors.service.ODKSensorService.aidl 
+ * ODK Collect/ODK Survey forms can also receive sensor data. In order for this to happen, sensor drivers need 
+ * to implement an activity that allows users to connect to and collect data from sensors. The activity is invoked from a form 
+ * and sensor data is returned to the form via the result intent from the activity. This activity's classname is included as 
+ * the "ODK_sensors_read_ui" meta-data element in the manifest file of the sensor driver application. This meta-data element 
+ * allows other applications (like ODK Collect) that interface with ODKSensors to discover the activity at runtime.  
+ * 
+ * The HeartrateDriverActivity is an example of a ODK_sensors_read_ui activity. Application developers could implement a similar 
+ * activity as part of their application that interacts with ODKSensors to collect sensor data.
+ * 
+ * Please look at HeartrateDriverImpl.java for a description of sensor drivers and how to implement a driverImpl class.
+ */
+
+/* 
+ * Activities that communicate with ODK Sensors need to extend org.opendatakit.sensors.service.BaseActivity, which provides the methods 
+ * to interface with the Sensors framework. Typically, methods from BaseActivity are invoked in the following sequence:
+ * 
+ * 1) launchSensorDiscovery(): this starts the sensor discovery process in ODKSensors. This allows the activity to discover the ID of 
+ * the sensor it needs to communicate to. If the activity stores the sensorID persistently, this might just be a 1-time thing.
+ * 2) sensorConnect(...): this establishes a connection with the sensor.
+ * 3) configure(...): Sensors often have configurable parameters, this call allows configuration of these parameters. This is an 
+ * optional call.
+ * 4) startSensor(...): ODKSensors starts collecting data from the sensor after this method call.
+ * 5) getSensorData(...): Activities call this method periodically to get sensor data from the framework.
+ * 6) stopSensor(...): ODKSensors stops collecting data from the sensor after this method call.
+ *  
+ */
 public class HeartrateDriverActivity extends BaseActivity {
 	
 	private static final String HR_SENSOR_ID_STR = "ZEPHYR_SENSOR_ID";
 	private static final String TAG = "SensorDriverActivity";
 	private static final int SENSOR_CONNECTION_COUNTER = 10;
 	
+	//each physical sensor has a unique sensorID. Activities use this sensorID to communicate with sensors via the framework.
 	private String sensorID = null;
+	
 	private boolean isConnectedToSensor = false;
+	
 	private boolean isStarted = false;
+	
 	private volatile int heartRate, beatCount;
+	
 	private DataProcessor sensorDataProcessor;
+	
 	private Button connectButton, startButton, recordButton;
+	
 	private TextView heartRateField;
 	
 	private ConnectionThread connectionThread;
 	
-	/** Called when the activity is first created. */
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +95,7 @@ public class HeartrateDriverActivity extends BaseActivity {
 		
 		SharedPreferences appPreferences = getPreferences(MODE_PRIVATE);
 		
+		//restore the sensorID if we stored it earlier
 		if(appPreferences.contains(HR_SENSOR_ID_STR)) {
 			sensorID = appPreferences.getString(HR_SENSOR_ID_STR, null);
 			
@@ -78,8 +114,7 @@ public class HeartrateDriverActivity extends BaseActivity {
 		
 		connectButton.setEnabled(false);
 		startButton.setEnabled(false);	
-		recordButton.setEnabled(false);
-		
+		recordButton.setEnabled(false);	
 		
 		if(!isConnectedToSensor) {
 			connectButton.setEnabled(true);
@@ -107,11 +142,16 @@ public class HeartrateDriverActivity extends BaseActivity {
 	public void connectAction(View view) {
 
 		if(sensorID == null) {
-			launchSensorDiscovery();
+			//launch the framework's discovery process if we don't already have a sensor ID.
+			//the discovery process allows users to discover sensors and assign drivers to them.
+			//launchSensorDiscovery basically starts an activity for result in the framework, 
+			//so the discovery results are returned in the onActivityResult method below. 
+			super.launchSensorDiscovery();
 			return;
 		}
 
-		if (!isConnectedToSensor) {			
+		if (!isConnectedToSensor) {
+			//establish a connection to the physical sensor if we aren't connected already.
 			connectToSensor();
 		}
 	}
@@ -119,7 +159,9 @@ public class HeartrateDriverActivity extends BaseActivity {
 	public void startAction(View view) {
 		
 		try {
-			startSensor(sensorID);
+			//startSensor needs to be called after connecting to the physical sensor. 
+			//sensor data can be received from the framework after this.
+			super.startSensor(sensorID);
 		}
 		catch(RemoteException rex) {
 			rex.printStackTrace();
@@ -145,6 +187,7 @@ public class HeartrateDriverActivity extends BaseActivity {
 	public void onDestroy() {
 		
 		try {
+			//call stopSensor to stop receiving data from the framework.
 			stopSensor(sensorID);
 			isStarted = false;
 		}
@@ -152,18 +195,25 @@ public class HeartrateDriverActivity extends BaseActivity {
 			rex.printStackTrace();
 		}
 		
+		//amongst other things, the super.onDestroy terminates the connection between the activity and the Sensors framrwork. 
 		super.onDestroy();
 	}
 	
+	/*
+	 * Sensor data received from ODK Sensors is returned in a result intent.
+	 */
 	private void returnSensorDataToCaller() {
 		Intent intent = new Intent();
-		intent.putExtra(HeartrateDriverService.HEART_RATE, heartRate);
-		intent.putExtra(HeartrateDriverService.BEAT_COUNT, beatCount);
+		intent.putExtra(HeartrateDriverImpl.HEART_RATE, heartRate);
+		intent.putExtra(HeartrateDriverImpl.BEAT_COUNT, beatCount);
 		setResult(RESULT_OK, intent);
 		
 		finish();
 	}
 	
+	/*
+	 * sensorID is returned in the onActivityResult after sensor discovery completes.
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -172,10 +222,11 @@ public class HeartrateDriverActivity extends BaseActivity {
 		Log.d(TAG, "onActivityResult resultCode" + resultCode
 				+ "  and  requestCode" + requestCode);
 
+		//the result code is set by ODK Sensors.
 		if (requestCode == SENSOR_DISCOVERY_RETURN) {
 			// from addSensorActvitity
 			if (resultCode == RESULT_OK) {
-				// Get sensor id and state from result
+				// Get sensor id from result
 				if (data.hasExtra("sensor_id")) {
 					sensorID = data.getStringExtra("sensor_id");
 
@@ -193,6 +244,9 @@ public class HeartrateDriverActivity extends BaseActivity {
 		}
 	}
 	
+	/*
+	 * The Zephyr heart rate monitor is a bluetooth enabled sensor. so we connect in a thread, waiting for the connection to get established.
+	 */
 	private void connectToSensor() {
 		if(connectionThread != null && connectionThread.isAlive()) {
 			connectionThread.stopConnectionThread();
@@ -220,6 +274,8 @@ public class HeartrateDriverActivity extends BaseActivity {
 
 				try {
 					Log.d(TAG,"getSensorData");
+					
+					//call the getSensorData method periodically to get sensor data as key-value pairs from ODKSenors
 					sensorDataBundles = getSensorData(sensorID, 1);
 				}
 				catch(RemoteException rex) {
@@ -228,9 +284,13 @@ public class HeartrateDriverActivity extends BaseActivity {
 
 				if(sensorDataBundles != null) {
 					for(Bundle aBundle : sensorDataBundles) {
-						heartRate = aBundle.getInt(HeartrateDriverService.HEART_RATE);
-						beatCount = aBundle.getInt(HeartrateDriverService.BEAT_COUNT);
 						
+						//retrieve sensor data from each bundle and store it locally. 
+						
+						heartRate = aBundle.getInt(HeartrateDriverImpl.HEART_RATE);
+						beatCount = aBundle.getInt(HeartrateDriverImpl.BEAT_COUNT);
+						
+						//update UI
 						heartRateField.setText(String.valueOf(heartRate));
 					}
 				}
@@ -253,6 +313,7 @@ public class HeartrateDriverActivity extends BaseActivity {
 			return null;
 		}
 	}
+	
 	
 	private class ConnectionThread extends Thread {
 		private String TAG = "ConnectionThread";
@@ -285,6 +346,7 @@ public class HeartrateDriverActivity extends BaseActivity {
 			int connectCntr = 0;
 
 			try {
+				//this initiates connection establishment in ODK sensors.
 				sensorConnect(sensorID, false);
 
 				while (isConnThreadRunning && (connectCntr++ < SENSOR_CONNECTION_COUNTER)) {
