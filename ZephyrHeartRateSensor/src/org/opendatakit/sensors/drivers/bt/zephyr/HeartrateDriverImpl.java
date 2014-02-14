@@ -27,20 +27,52 @@ import org.opendatakit.sensors.drivers.AbstractDriverBaseV2;
 import android.os.Bundle;
 import android.util.Log;
 
-public class ZephyrHRSensor extends AbstractDriverBaseV2  {
+/*
+ * Sensor drivers are implemented as Android Services and are accessed by ODK Sensors over the service interface. 
+ * The generic classes that handle Android Service semantics are already implemented and available in the 
+ * org.opendatakit.sensors.drivers package of the Sensors framework. 
+ * 
+ * Sensor driver developers are responsible for implementing a class (known as the driverImpl class) that decodes 
+ * raw sensor data buffers received from sensors into higher level key-value pairs, and encodes key-value pairs 
+ * into a buffer in a sensor-specific format that is sent to the sensor. The Sensors framework mediates the communications 
+ * between physical sensors and their drivers. The driverImpl class needs to either implement the 
+ * org.opendatakit.sensors.Driver interface or extend the org.opendatakit.sensors.drivers.AbstractDriverBaseV2 class (a convenience
+ * class that implements the Driver interface) provided by ODKSensors. Please look at org.opendatakit.sensors.Driver.java for
+ * a description of each method in the interface. 
+ * 
+ * ODK Sensors uses some metadata defined in the AndroidManifest.xml of the Android Application that implements a sensor driver
+ * to discover and instantiate drivers. Please look at the manifest file of this project for meta-data elements that need to 
+ * be defined by driver developers.
+ *  
+ */
 
-	private static final String BEAT_COUNT = "BC";
-	private static final String HEART_RATE = "HR";
-	public static final String TAG = "ZephyrHRSensorV2";
+/*
+ * This file contains the driverImpl class for a sensor driver that communicates with Zephyr Heartrate monitors. The meta-data element 
+ * called "ODK_sensors_driverImplClassname" in the manifest file refers to this class.
+ * 
+ */
 
-	public ZephyrHRSensor() {
+public class HeartrateDriverImpl extends AbstractDriverBaseV2  {
+
+	public static final String BEAT_COUNT = "BC";
+	public  static final String HEART_RATE = "HR";
+	
+	private static final int ZEPHYR_PDU_SIZE = 60;
+	private static final String TAG = "ZephyrHRSensorV2";
+
+	public HeartrateDriverImpl() {
 		super();
 		
-		// data reporting parameters
+		// data reporting parameters. These are the key-value pairs returned by this driver.
 		sensorParams.add(new SensorParameter(HEART_RATE, SensorParameter.Type.INTEGER, SensorParameter.Purpose.DATA, "Heart Rate"));
 		sensorParams.add(new SensorParameter(BEAT_COUNT, SensorParameter.Type.INTEGER, SensorParameter.Purpose.DATA, "Beat counter that rolls over"));
 		Log.d(TAG," constructed" );
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.opendatakit.sensors.drivers.AbstractDriverBaseV2#getSensorData(long, java.util.List, byte[])
+	 */
 
 	@Override
 	public SensorDataParseResponse getSensorData(long maxNumReadings, List<SensorDataPacket> rawData, byte[] remainingData) {
@@ -66,12 +98,12 @@ public class ZephyrHRSensor extends AbstractDriverBaseV2  {
 
 		// Parse all data into packet sizes of 60 bytes
 		int masked;
-		while (dataBuffer.size() >= 60) {
+		while (dataBuffer.size() >= ZEPHYR_PDU_SIZE) {
 			Log.d(TAG,"dataBuffer size: " + dataBuffer.size());	
 			Bundle parsedPkt = new Bundle();
 			allData.add(parsedPkt);
 
-			for(int i = 0; i < 60; i++) {	
+			for(int i = 0; i < ZEPHYR_PDU_SIZE; i++) {	
 				byte b = dataBuffer.remove(0);	
 
 				if(i == 12) {
@@ -95,17 +127,5 @@ public class ZephyrHRSensor extends AbstractDriverBaseV2  {
 		
 		Log.d(TAG,"all done dataBuffer size: " + dataBuffer.size());		
 		return new SensorDataParseResponse(allData, newRemainingData);	
-	}
-
-	@Override
-	public byte[] configureCmd(String setting, Bundle params) {
-
-		if (setting.equals("TEST")) {
-			String message = "Z\n";
-			return message.getBytes();
-		}
-
-		return "".getBytes();
-	}
-	
+	}	
 }

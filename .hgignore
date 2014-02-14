@@ -3,6 +3,17 @@ syntax: regexp
 ^NoninUSBXpodPulseOx/gen$
 syntax: regexp
 ^NoninUSBXpodPulseOx/bin$
-syntax: glob
-*/bin/**
-*/gen/**
+syntax: regexp
+^AccelerometerDriver/bin$
+syntax: regexp
+^ForceDriver1Axis/bin$
+syntax: regexp
+^ForceDriver3Axis/bin$
+syntax: regexp
+^USBTemperatureSensor/bin$
+syntax: regexp
+^ZebraMzSeriesPrinter/bin$
+syntax: regexp
+^ZephyrHeartRateSensor/bin$
+syntax: regexp
+^ZephyrHeartRateSensor/gen$

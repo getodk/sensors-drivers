@@ -6,29 +6,61 @@
     <uses-sdk android:minSdkVersion="10" />
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name="SensorDriverActivity"
+        <activity android:name="HeartrateDriverActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="ODK_sensors_version" android:value="V2" />
-        <meta-data android:name="ODK_sensors_commChannel" android:value="BLUETOOTH" />
-        <meta-data android:name="ODK_sensors_driverType" android:value="ZephyrHRM" />
-        <meta-data android:name="ODK_sensors_address" android:value="org.opendatakit.sensors.drivers.SensorDriverService"/>
-        <meta-data android:name="ODK_sensors_driverImplClassname" android:value="org.opendatakit.sensors.drivers.bt.zephyr.ZephyrHRSensor" />
         
+        
+        <!-- The meta-data elements required by ODKSensors -->
+        
+        <!-- The current version of the ODK Sensors framework. As of 7/3/2013, this is "V2" -->
+        <meta-data
+            android:name="ODK_sensors_version"
+            android:value="V2" />
+        
+        <!-- The physical channel over which the sensor communicates with Android. ODKSensors currently supports "BLUETOOTH" and "USB" channels. -->
+        <meta-data
+            android:name="ODK_sensors_commChannel"
+            android:value="BLUETOOTH" />
+        
+        <!-- A generic, human readable driver type. -->
+        <meta-data
+            android:name="ODK_sensors_driverType"
+            android:value="ZephyrHRM" />
+        
+        <!-- The address used by ODKSensors to connect to & communicate with the driver. The value of this element is the same
+        as the name of the Android service defined in the <service> element below. -->
+        <meta-data
+            android:name="ODK_sensors_address"
+            android:value="org.opendatakit.sensors.drivers.SensorDriverService" />
+        
+        <!-- The FULLY QUALIFIED name of the driverImpl class, the class that implements the sensor driver functionality.  -->
+        <meta-data
+            android:name="ODK_sensors_driverImplClassname"
+            android:value="org.opendatakit.sensors.drivers.bt.zephyr.HeartrateDriverImpl" />
+        
+        <!-- The FULLY QUALIFIED name of the activity that other applications can invoke to read sensor data. 
+        This is an optional element.  -->
+        <meta-data
+            android:name="ODK_sensors_read_ui"
+            android:value="org.opendatakit.sensors.drivers.bt.zephyr.HeartrateDriverActivity" />        
+        
+        <!-- The FULLY QUALIFIED name of the activity that other applications can invoke to configure the physical sensor. 
+        This is an optional element.  -->
+        <!-- <meta-data
+            android:name="ODK_sensors_config_ui"
+            android:value="org.opendatakit.sensors.drivers.bt.zephyr.HeartrateSensorConfigureActivity" /> -->
+            
+        
+        <!-- The Android Service name for this sensor driver.         -->
         <service android:exported="true" android:name="org.opendatakit.sensors.drivers.SensorDriverService">
             
-        </service> 
-                 <receiver
-            android:enabled="true"
-            android:exported="true"
-            android:name="org.opendatakit.sensors.drivers.DriverDiscovery" >
-            <intent-filter >
-                <action android:name="org.opendatakit.sensors.drivers.DriverDiscovery" />
-            </intent-filter>
-        </receiver>
+        </service>
+        
+        
     </application>
 </manifest>
