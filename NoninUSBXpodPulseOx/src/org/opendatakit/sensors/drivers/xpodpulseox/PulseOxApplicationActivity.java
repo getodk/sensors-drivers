@@ -28,6 +28,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.androidplot.ui.AnchorPosition;
@@ -55,6 +56,9 @@ public class PulseOxApplicationActivity extends BaseActivity {
 
 	private String pulseOxId;
 
+	private Button probeConnectionButton;
+	private Button recordPulseOxButton;
+	
 	private TextView pulseTxt;
 	private TextView oxTxt;
 	private TextView statusTxt;
@@ -70,7 +74,7 @@ public class PulseOxApplicationActivity extends BaseActivity {
 	private SimpleXYSeries plenthSeries;
 	private XYPlot dataPlot;
 	private int dataPointCounter = 0;
-		
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +84,10 @@ public class PulseOxApplicationActivity extends BaseActivity {
 		oxTxt = (TextView) findViewById(R.id.oxygenReading);
 		statusTxt = (TextView) findViewById(R.id.probeStatus);
 		dataPlot = (XYPlot) findViewById (R.id.dataPlot);
+		probeConnectionButton = (Button) findViewById (R.id.connect);
+		recordPulseOxButton = (Button) findViewById (R.id.record);
+		
+		recordPulseOxButton.setEnabled(false);
 		
  	    Widget domainLabelWidget = dataPlot.getDomainLabelWidget();
  		
@@ -157,6 +165,7 @@ public class PulseOxApplicationActivity extends BaseActivity {
 		
 		if (pulseOxId == null) {
 			Log.e(TAG, "ERROR: Somehow tried to connect when no ID is present");
+			return;
 		}
 
 		try {
@@ -164,12 +173,14 @@ public class PulseOxApplicationActivity extends BaseActivity {
 				Log.d(TAG, "connecting to sensor: " + pulseOxId);
 				sensorConnect(pulseOxId, false);
 				pulseTxt.setText("IN CONNECTING");
+				probeConnectionButton.setText("PROBLEM DETECTING PROBE\n Retry PulseOx Probe Connect");
 			}
 			if (isConnected(pulseOxId)) {
 				Log.d(TAG, "starting pulse ox sensor: " + pulseOxId);
 				isConnected = true;
 				startSensor(pulseOxId);
 				pulseTxt.setText("IN STARTING");
+				probeConnectionButton.setText("Restart PulseOx Probe Connection");
 			} else {
 				Log.d(TAG, "Trouble in connecting to pulseOx sensor");
 			}
@@ -238,11 +249,15 @@ public class PulseOxApplicationActivity extends BaseActivity {
 									oxTxt.setTextColor(Color.MAGENTA);
 									statusTxt.setTextColor(Color.RED);
 									statusTxt.setText(DATA_INACCURATE);
+									recordPulseOxButton.setEnabled(false);
+									recordPulseOxButton.setTextColor(Color.GRAY);
 								} else {
 									pulseTxt.setTextColor(PULSE_COLOR);
 									oxTxt.setTextColor(Color.BLUE);
 									statusTxt.setTextColor(Color.BLACK);
 									statusTxt.setText(DATA_GOOD);
+									recordPulseOxButton.setEnabled(true);
+									recordPulseOxButton.setTextColor(Color.BLUE);
 								}
 	    						
 							}
