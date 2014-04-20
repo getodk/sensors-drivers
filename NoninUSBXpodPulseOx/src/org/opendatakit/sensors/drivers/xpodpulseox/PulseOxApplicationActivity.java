@@ -171,7 +171,7 @@ public class PulseOxApplicationActivity extends BaseActivity {
 		try {
 			if (!isConnected(pulseOxId)) {
 				Log.d(TAG, "connecting to sensor: " + pulseOxId);
-				sensorConnect(pulseOxId, false);
+				sensorConnect(pulseOxId, null);
 				pulseTxt.setText("IN CONNECTING");
 				probeConnectionButton.setText("PROBLEM DETECTING PROBE\n Retry PulseOx Probe Connect");
 			}
