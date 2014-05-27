@@ -24,7 +24,7 @@ class NoninPacket {
 
 	static final String OX = "ox";
 	static final String PULSE = "pulse";
-	static final String USABLE = "usable";
+	static final String UNUSABLE = "usable";
 	static final String CONNECTED = "connected";
 	static final String PLETHYSMOGRAPHIC = "plethysmographic";
 	
@@ -107,7 +107,7 @@ class NoninPacket {
 	Bundle getParsedDataBundle() {
 		Bundle parsedPkt = new Bundle();
 		parsedPkt.putBoolean(CONNECTED, sensorConnected());
-		parsedPkt.putBoolean(USABLE, unusableData());
+		parsedPkt.putBoolean(UNUSABLE, unusableData());
 		parsedPkt.putInt(PULSE, getExtendedPluseRate());
 		parsedPkt.putInt(OX, getExtendedOxygenLevel());
 		parsedPkt.putIntArray(PLETHYSMOGRAPHIC, getPlethysmographic());

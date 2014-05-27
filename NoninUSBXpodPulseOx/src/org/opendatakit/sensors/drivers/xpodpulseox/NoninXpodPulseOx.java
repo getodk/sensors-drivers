@@ -34,7 +34,7 @@ public class NoninXpodPulseOx extends AbstractDriverBaseV2 {
 		super();
 		Log.e(TAG, "Nonin Xpod PulseOx Sensor Driver constructed");
 		sensorParams.add(new SensorParameter(NoninPacket.CONNECTED, SensorParameter.Type.BOOLEAN, SensorParameter.Purpose.DATA, "is PulseOx Sensor Connected"));
-		sensorParams.add(new SensorParameter(NoninPacket.USABLE, SensorParameter.Type.BOOLEAN, SensorParameter.Purpose.DATA, "is PulseOx Sensor data usable (good signals)"));
+		sensorParams.add(new SensorParameter(NoninPacket.UNUSABLE, SensorParameter.Type.BOOLEAN, SensorParameter.Purpose.DATA, "is PulseOx Sensor data usable (good signals)"));
 		sensorParams.add(new SensorParameter(NoninPacket.PULSE, SensorParameter.Type.INTEGER, SensorParameter.Purpose.DATA, "Pulse"));
 		sensorParams.add(new SensorParameter(NoninPacket.OX, SensorParameter.Type.INTEGER, SensorParameter.Purpose.DATA, "Blood Oxygen Level"));
 	}
