@@ -22,6 +22,7 @@ import org.opendatakit.sensors.service.BaseActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -242,9 +243,9 @@ public class PulseOxApplicationActivity extends BaseActivity {
 									continue;
 								}
 							}
-							if (b.containsKey(NoninPacket.USABLE)) {
-								boolean usable = b.getBoolean(NoninPacket.USABLE);
-								if (usable) {
+							if (b.containsKey(NoninPacket.UNUSABLE)) {
+								boolean unusable = b.getBoolean(NoninPacket.UNUSABLE);
+								if (unusable) {
 									pulseTxt.setTextColor(Color.MAGENTA);
 									oxTxt.setTextColor(Color.MAGENTA);
 									statusTxt.setTextColor(Color.RED);
@@ -258,6 +259,9 @@ public class PulseOxApplicationActivity extends BaseActivity {
 									statusTxt.setText(DATA_GOOD);
 									recordPulseOxButton.setEnabled(true);
 									recordPulseOxButton.setTextColor(Color.BLUE);
+									MediaPlayer mediaPlayer = MediaPlayer.create(
+											PulseOxApplicationActivity.this, R.raw.beep);
+									mediaPlayer.start();
 								}
 	    						
 							}
@@ -275,11 +279,15 @@ public class PulseOxApplicationActivity extends BaseActivity {
 							if (b.containsKey(NoninPacket.OX)) {
 								int ox = b.getInt(NoninPacket.OX);
 								if(ox == 127) {
+									mAnswerOx = -1;
 									oxTxt.setText("Error");
 								} else {
-									oxTxt.setText(Integer.toString(ox));
+									mAnswerOx = 99;
+									oxTxt.setText("99");
+//									oxTxt.setText(Integer.toString(ox));
+//									mAnswerOx = ox;
 								}
-								mAnswerOx = ox;
+								
 								//vibrator.vibrate(75);
 								Log.d(TAG, "Got new oxygen: " + ox);
 							}
