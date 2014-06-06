@@ -70,6 +70,9 @@ public class PulseOxApplicationActivity extends BaseActivity {
 	private DataProcessor pulseOxProcessor;
 
 	private boolean isConnected;
+	
+	// Used to only play the beep once when an getting an accurate reading
+	private boolean playBeep = true;
 
 	//plots for plotting the data from the oxygen sensor
 	private SimpleXYSeries plenthSeries;
@@ -252,6 +255,7 @@ public class PulseOxApplicationActivity extends BaseActivity {
 									statusTxt.setText(DATA_INACCURATE);
 									recordPulseOxButton.setEnabled(false);
 									recordPulseOxButton.setTextColor(Color.GRAY);
+									playBeep=true;
 								} else {
 									pulseTxt.setTextColor(PULSE_COLOR);
 									oxTxt.setTextColor(Color.BLUE);
@@ -259,9 +263,12 @@ public class PulseOxApplicationActivity extends BaseActivity {
 									statusTxt.setText(DATA_GOOD);
 									recordPulseOxButton.setEnabled(true);
 									recordPulseOxButton.setTextColor(Color.BLUE);
-									MediaPlayer mediaPlayer = MediaPlayer.create(
-											PulseOxApplicationActivity.this, R.raw.beep);
-									mediaPlayer.start();
+									if (playBeep) {
+										MediaPlayer mediaPlayer = MediaPlayer.create(
+												PulseOxApplicationActivity.this, R.raw.beep);
+										mediaPlayer.start();
+										playBeep = false;
+									}
 								}
 	    						
 							}
