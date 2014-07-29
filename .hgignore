@@ -17,3 +17,5 @@ syntax: regexp
 ^ZephyrHeartRateSensor/bin$
 syntax: regexp
 ^ZephyrHeartRateSensor/gen$
+syntax: glob
+*/gen/**
