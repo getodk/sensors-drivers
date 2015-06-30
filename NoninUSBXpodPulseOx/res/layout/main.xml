@@ -11,7 +11,8 @@
         android:onClick="connectButtonAction"
         android:paddingTop="25dp"
         android:paddingBottom="25dp"
-        android:text="@string/connect_button_txt" />
+        android:text="@string/connect_button_txt" 
+        android:background="@color/green"/>
 
 <TableLayout
      android:layout_width="match_parent"
