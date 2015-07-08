@@ -8,8 +8,6 @@ The Google group for user questions is: [opendatakit@](https://groups.google.com
 
 It is part of the ODK 2.0 Android tools suite.
 
-__ANDROID STUDIO NOTE:__ open the .iml files (otherwise you won't get the unit and android system tests)
-
 This contains a collection of sensor drivers that perform various data collection tasks. 
 
 The developer [wiki](https://github.com/opendatakit/opendatakit/wiki) (including release notes) and
