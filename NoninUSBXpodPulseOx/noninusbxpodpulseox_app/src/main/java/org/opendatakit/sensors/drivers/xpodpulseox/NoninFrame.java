@@ -18,88 +18,88 @@ package org.opendatakit.sensors.drivers.xpodpulseox;
 import java.util.List;
 
 class NoninFrame {
-	public static final int FRAME_SIZE = 5;
-	
-	public static final int START_BYTE = 0x01;
-	
-	private static final int SNSD_BIT = 6;
-	private static final int SNSA_BIT = 3;
-	private static final int SYNC_BIT = 0;
-	
-	private byte status;
-	private byte value;
-	private byte plethysmographic;
-	
-	private int endByteIndex;
+   public static final int FRAME_SIZE = 5;
 
-	NoninFrame(List<Byte> byteArray, int endIndex) throws NoninParseException {
-		if (byteArray.size() != FRAME_SIZE) {
-			throw new NoninParseException("Incorrect Number of Bytes in Frame");
-		}
+   public static final int START_BYTE = 0x01;
 
-		// convert to byte array
-		byte [] frame = new byte[FRAME_SIZE];
-		for(int j=0; j < FRAME_SIZE; j++) {
-			frame[j] = byteArray.get(j);
-		}
-		
-		if(frame[0] != START_BYTE) {
-			throw new NoninParseException("Frame does not begin with Start Byte!");
-		}
-		
-		if((frame[1] & 0x80) != 0x80) {
-			throw new NoninParseException("Status Byte does not have Bit 7 set to 1!");
-		}
-		
-		if((frame[3] & 0x80) != 0x00) {
-			throw new NoninParseException("Flat Byte does not have Bit 7 set to 0 (Zero)!");
-		}
-		
-		int checksum = frame[0] + frame[1] + frame[2] + frame[3];
-		checksum = checksum % 256;
-		checksum = checksum & 0xff;
-		
-		int packetChecksum = frame[4];
-		packetChecksum = packetChecksum & 0xff;
-		if(packetChecksum != checksum) {
-			throw new NoninParseException("Checksum Failure!");
-		}
+   private static final int SNSD_BIT = 6;
+   private static final int SNSA_BIT = 3;
+   private static final int SYNC_BIT = 0;
 
-		status = frame[1];
-		plethysmographic = frame[2];
-		value = frame[3];
-		endByteIndex = endIndex;
-	}
-	
-	
-	private boolean bitIsSet(byte value, int position) {
-		int tmp = value >> position;
-		return ((tmp & 0x01) == 0x01);
-	}
-	
-	boolean isFirstFrame() {
-		return bitIsSet(status, SYNC_BIT);
-	}
-	
-	boolean sensorConnected() {
-		return !bitIsSet(status, SNSD_BIT);
-	}
-	
-	boolean unusableData() {
-		return bitIsSet(status, SNSA_BIT);
-	}
-	
-	byte getFrameValue() {
-		return value;
-	}
+   private byte status;
+   private byte value;
+   private byte plethysmographic;
 
-	byte getPlethysmographic() {
-		return plethysmographic;
-	}
-	
-	int getEndByteIndex() {
-		return endByteIndex;
-	}
-	
-	
+   private int endByteIndex;
+
+   NoninFrame(List<Byte> byteArray, int endIndex) throws NoninParseException {
+      if (byteArray.size() != FRAME_SIZE) {
+         throw new NoninParseException("Incorrect Number of Bytes in Frame");
+      }
+
+      // convert to byte array
+      byte [] frame = new byte[FRAME_SIZE];
+      for(int j=0; j < FRAME_SIZE; j++) {
+         frame[j] = byteArray.get(j);
+      }
+
+      if(frame[0] != START_BYTE) {
+         throw new NoninParseException("Frame does not begin with Start Byte!");
+      }
+
+      if((frame[1] & 0x80) != 0x80) {
+         throw new NoninParseException("Status Byte does not have Bit 7 set to 1!");
+      }
+
+      if((frame[3] & 0x80) != 0x00) {
+         throw new NoninParseException("Flat Byte does not have Bit 7 set to 0 (Zero)!");
+      }
+
+      int checksum = frame[0] + frame[1] + frame[2] + frame[3];
+      checksum = checksum % 256;
+      checksum = checksum & 0xff;
+
+      int packetChecksum = frame[4];
+      packetChecksum = packetChecksum & 0xff;
+      if(packetChecksum != checksum) {
+         throw new NoninParseException("Checksum Failure!");
+      }
+
+      status = frame[1];
+      plethysmographic = frame[2];
+      value = frame[3];
+      endByteIndex = endIndex;
+   }
+
+
+   private boolean bitIsSet(byte value, int position) {
+      int tmp = value >> position;
+      return ((tmp & 0x01) == 0x01);
+   }
+
+   boolean isFirstFrame() {
+      return bitIsSet(status, SYNC_BIT);
+   }
+
+   boolean sensorConnected() {
+      return !bitIsSet(status, SNSD_BIT);
+   }
+
+   boolean unusableData() {
+      return bitIsSet(status, SNSA_BIT);
+   }
+
+   byte getFrameValue() {
+      return value;
+   }
+
+   byte getPlethysmographic() {
+      return plethysmographic;
+   }
+
+   int getEndByteIndex() {
+      return endByteIndex;
+   }
+
+
 }
