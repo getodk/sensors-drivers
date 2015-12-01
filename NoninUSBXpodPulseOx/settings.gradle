@@ -8,7 +8,7 @@ if (!gradle.ext.has('workspacePath')) {
     if (path != null) {
         logger.warn("noninusbxpodpulseox/settings.gradle Found value for System.getProperty('com.android" +
                 ".studio.gradle.project.path')");
-        gradle.ext.workspacePath = (new File(path)).getParentFile().getAbsolutePath();
+        gradle.ext.workspacePath = (new File(path)).getParentFile().getParentFile().getAbsolutePath();
     } else {
         logger.warn("noninusbxpodpulseox/settings.gradle No value found for System.getProperty('com.android.studio.gradle.project.path')");
         gradle.ext.workspacePath = new File("../..").getAbsolutePath();
