@@ -2,20 +2,21 @@ gradle.ext.gradleConfigVersion = 14
 
 if (!gradle.ext.has('workspacePath')) {
     def env = System.getProperties();
-    logger.warn("noninusbxpodpulseox/settings.gradle System.getProperties().stringPropertyNames(): " + env
+    logger.warn("NoninUSBXpodPulseOx/settings.gradle System.getProperties().stringPropertyNames()" +
+            ": " + env
             .stringPropertyNames());
     def path = System.getProperty('com.android.studio.gradle.project.path');
     if (path != null) {
-        logger.warn("noninusbxpodpulseox/settings.gradle Found value for System.getProperty('com.android" +
+        logger.warn("NoninUSBXpodPulseOx/settings.gradle Found value for System.getProperty('com.android" +
                 ".studio.gradle.project.path')");
         gradle.ext.workspacePath = (new File(path)).getParentFile().getParentFile().getAbsolutePath();
     } else {
-        logger.warn("noninusbxpodpulseox/settings.gradle No value found for System.getProperty('com.android.studio.gradle.project.path')");
+        logger.warn("NoninUSBXpodPulseOx/settings.gradle No value found for System.getProperty('com.android.studio.gradle.project.path')");
         gradle.ext.workspacePath = new File("../..").getAbsolutePath();
     }
 }
 
-logger.warn('noninusbxpodpulseox/settings.gradle -- gradle.ext.workspacePath: ' + gradle.ext.workspacePath)
+logger.warn('NoninUSBXpodPulseOx/settings.gradle -- gradle.ext.workspacePath: ' + gradle.ext.workspacePath)
 
 gradle.ext.local = gradle.ext.workspacePath + '/gradle-config/remote.gradle'
 gradle.ext.remote = 'https://raw.githubusercontent.com/opendatakit/gradle-config/' + gradle.ext.gradleConfigVersion + '/remote.gradle'
