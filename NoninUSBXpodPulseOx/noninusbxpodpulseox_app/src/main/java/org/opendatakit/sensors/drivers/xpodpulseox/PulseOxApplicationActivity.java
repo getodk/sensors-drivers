@@ -154,7 +154,7 @@ public class PulseOxApplicationActivity extends BaseActivity {
       Log.d(TAG, "connect button pressed");
 
       if (pulseOxId == null) {
-         launchSensorDiscovery("TABLES");
+         launchSensorDiscovery(null);
       } else {
          connectPulseOx();
       }
