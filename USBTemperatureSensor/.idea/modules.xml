@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/USBTemperatureSensor.iml" filepath="$PROJECT_DIR$/USBTemperatureSensor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sensors/sensors.iml" filepath="$PROJECT_DIR$/sensors/sensors.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../sensors/sensorsinterfaces_lib/sensorsinterfaces_lib.iml" filepath="$PROJECT_DIR$/../../sensors/sensorsinterfaces_lib/sensorsinterfaces_lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/usbtemperaturesensor_app/usbtemperaturesensor_app.iml" filepath="$PROJECT_DIR$/usbtemperaturesensor_app/usbtemperaturesensor_app.iml" />
+    </modules>
+  </component>
+</project>
