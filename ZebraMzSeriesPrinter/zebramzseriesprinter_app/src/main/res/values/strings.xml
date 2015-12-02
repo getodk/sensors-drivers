@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ODK Zebra Printer</string>
+    <string name="print">Print</string>
+    <string name="connect_to_another_printer">Connect to another printer</string>
+    <string name="exit_print">Exit print screen</string>
+    <string name="click_to_install_printer">Click OK to install printer</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+</resources>
