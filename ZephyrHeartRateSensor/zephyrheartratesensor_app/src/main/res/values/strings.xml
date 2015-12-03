@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">ZephyrHeartRateSensorDriverActivity</string>
+    <string name="app_name">ZephyrHRSensor</string>
+    <string name="connect">Connect</string>
+    <string name="record">Record Reading</string>
+    <string name="heartRate">Heart Rate</string>
+    <string name="start">Start</string>
+</resources>
