@@ -20,7 +20,7 @@ logger.warn('AccelerometerDriver/settings.gradle -- gradle.ext.workspacePath: ' 
 
 gradle.ext.local = gradle.ext.workspacePath + '/gradle-config/remote.gradle'
 gradle.ext.remote = 'https://raw.githubusercontent.com/opendatakit/gradle-config/' + gradle.ext.gradleConfigVersion + '/remote.gradle'
-gradle.ext.useLocal = false // set to false to always build against remote artifacts
+gradle.ext.useLocal = true // set to false to always build against remote artifacts
 
 if ((new File(gradle.ext.local)).exists()) {
     gradle.ext.useLocalPaths = true
