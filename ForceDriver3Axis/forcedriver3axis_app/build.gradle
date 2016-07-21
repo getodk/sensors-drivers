@@ -14,6 +14,8 @@ applicationScripts.each {
 
 apply plugin: 'com.android.application'
 
+com.android.ddmlib.DdmPreferences.setTimeOut(60000)
+
 android {
     // The following are set in the common.gradle file
     compileSdkVersion(compileVersion)
@@ -27,12 +29,42 @@ android {
         versionName(versionCodeName)
     }
 
+    productFlavors {
+        demo {
+        }
+
+        master {
+        }
+
+        snapshot {
+        }
+
+        uitest {
+        }
+    }
+
+    signingConfigs {
+        release {
+            if (shouldSign) {
+                storeFile file(signStoreFilePath)
+                storePassword signStorePass
+                keyAlias signKeyAlias
+                keyPassword signKeyPass
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled(minify)
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
+            if (shouldSign) {
+                signingConfig signingConfigs.release
+            }
         }
         debug {
+            debuggable(true)
             testCoverageEnabled(testCoverage) // Allows AndroidTest JaCoCo reports to be generated
         }
     }
@@ -57,15 +89,26 @@ configurations.all {
     }
 }
 
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
+    }
+}
 
 dependencies {
     compile fileTree(include: '*.jar', dir: 'libs')
 
-    if (sensorsInterfacesProjectPath.exists() && gradle.useLocal) { // Local project is favoured
-        compile project(sensorsInterfacesProjectName)
+    if (sensorsInterfaceProjectPath.exists() && gradle.useLocal) { // Local project is favoured
+        compile project(sensorsInterfaceProjectName)
     } else {
-        compile(group: groupId, name: sensorsInterfacesArtifactName,
-                version: (useLatestSensorsInterfaces ? latestVersion : sensorsInterfacesSnapshot), ext: 'aar')
+        demoCompile(group: groupId, name: sensorsInterfaceDemoArtifactName, classifier: demoRelease,
+                version: latestVersion, ext: 'aar')
+        masterCompile(group: groupId, name: sensorsInterfaceMasterArtifactName, classifier: masterRelease,
+                version: masterArtifactVersion, ext: 'aar')
+        snapshotCompile(group: groupId, name: sensorsInterfaceSnapshotArtifactName,
+                classifier: snapshotRelease, version: latestVersion, ext: 'aar')
+        uitestCompile(group: groupId, name: sensorsInterfaceSnapshotArtifactName,
+                classifier: snapshotRelease, version: latestVersion, ext: 'aar')
     }
 
     androidTestCompile 'junit:junit:4.12'

@@ -1,4 +1,4 @@
-gradle.ext.gradleConfigVersion = 30
+gradle.ext.gradleConfigVersion = 52
 
 if (!gradle.ext.has('workspacePath')) {
     def env = System.getProperties();
@@ -36,10 +36,8 @@ settingsScripts.each {
 
 include ':noninusbxpodpulseox_app'
 
-
-if (sensorsInterfacesProjectPath.exists() && gradle.ext.useLocal) {
+if (sensorsInterfaceProjectPath.exists() && gradle.ext.useLocal) {
     // check if local library project is present
-    include sensorsInterfacesProjectName
-    project(sensorsInterfacesProjectName).setProjectDir(sensorsInterfacesProjectPath) // set local location
+    include sensorsInterfaceProjectName
+    project(sensorsInterfaceProjectName).setProjectDir(sensorsInterfaceProjectPath) // set local location
 }
-
