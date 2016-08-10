@@ -50,7 +50,7 @@ public class PrinterDriver extends AbstractDriverBaseV2  {
 	public SensorDataParseResponse getSensorData(long maxNumReadings, List<SensorDataPacket> rawData, byte[] remainingData) {
 		List<Bundle> allData = new ArrayList<Bundle>();
 
-		return new SensorDataParseResponse(allData, null);
+		return new SensorDataParseResponse(allData, new byte[]{});
 	}
 
 	@Override
