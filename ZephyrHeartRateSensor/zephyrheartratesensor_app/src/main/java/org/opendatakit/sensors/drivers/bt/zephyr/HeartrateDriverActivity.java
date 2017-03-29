@@ -347,7 +347,7 @@ public class HeartrateDriverActivity extends BaseActivity {
 
 			try {
 				//this initiates connection establishment in ODK sensors.
-				sensorConnect(sensorID, null);
+				sensorConnect(sensorID);
 
 				while (isConnThreadRunning && (connectCntr++ < SENSOR_CONNECTION_COUNTER)) {
 					try {

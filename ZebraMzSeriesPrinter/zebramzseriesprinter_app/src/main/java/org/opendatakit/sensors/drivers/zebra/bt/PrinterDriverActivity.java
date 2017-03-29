@@ -235,7 +235,7 @@ public class PrinterDriverActivity extends BaseActivity {
 			int connectCntr = 0;
 
 			try {
-				sensorConnect(printerID, null);
+				sensorConnect(printerID);
 
 				while (isConnThreadRunning && (connectCntr++ < SENSOR_CONNECTION_COUNTER)) {
 					try {
