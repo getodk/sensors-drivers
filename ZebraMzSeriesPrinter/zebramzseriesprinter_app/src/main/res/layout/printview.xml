@@ -21,7 +21,7 @@
             android:layout_gravity="center_vertical|center"
             android:onClick="print"
             android:padding="20dp"
-            android:text="@+string/print"
+            android:text="@string/print"
             android:textSize="21sp" />
     </LinearLayout>
 
@@ -35,7 +35,7 @@
         android:layout_marginTop="5dp"
         android:onClick="reconnectPrinter"
         android:padding="20dp"
-        android:text="@+string/connect_to_another_printer"
+        android:text="@string/connect_to_another_printer"
         android:textSize="21sp" />
 
     <Button
@@ -47,7 +47,7 @@
         android:layout_marginTop="5dp"
         android:onClick="exitApplication"
         android:padding="20dp"
-        android:text="@+string/exit_print"
+        android:text="@string/exit_print"
         android:textSize="21sp" />
 
 </RelativeLayout>

@@ -88,6 +88,8 @@ public class PrinterDriverActivity extends BaseActivity {
 
 			if(printDataBundle != null) {
 				sendDataToSensor(printerID, printDataBundle);
+			} else {
+				Log.e(TAG, "PRINT DATA BUNDLE is NULL");
 			}
 		}
 		catch(RemoteException rex) {
